@@ -1,0 +1,135 @@
+// Devocionales — write and publish devotionals
+
+function Devocionales() {
+  const [devos, setDevos] = React.useState(adminStorage.getAll('devocionales'));
+  const [showModal, setShowModal] = React.useState(false);
+  const [form, setForm] = React.useState({
+    title: '', body: '', scripture: '', linkedSong: ''
+  });
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    adminStorage.add('devocionales', form);
+    setDevos(adminStorage.getAll('devocionales'));
+    setShowModal(false);
+    setForm({ title: '', body: '', scripture: '', linkedSong: '' });
+  };
+  
+  const handleDelete = (id) => {
+    if (confirm('¿Eliminar este devocional?')) {
+      adminStorage.remove('devocionales', id);
+      setDevos(adminStorage.getAll('devocionales'));
+    }
+  };
+  
+  return (
+    <div className="admin-main">
+      <div className="page-head">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1>Devocionales</h1>
+            <p>Publica reflexiones y enseñanzas</p>
+          </div>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+            + Nuevo devocional
+          </button>
+        </div>
+      </div>
+      
+      {devos.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">✦</div>
+          <h3>Sin devocionales</h3>
+          <p>Escribe tu primer devocional para compartir con tu comunidad</p>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+            + Nuevo devocional
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gap: 16 }}>
+          {devos.map(d => (
+            <div key={d.id} style={{ 
+              background: 'oklch(0.14 0.02 260)', 
+              border: '1px solid var(--line)', 
+              borderRadius: 12, 
+              padding: 24 
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                <div>
+                  <h3 style={{ fontSize: 18, marginBottom: 6 }}>{d.title}</h3>
+                  {d.scripture && (
+                    <div style={{ fontSize: 13, color: 'var(--cyan)', fontFamily: 'JetBrains Mono, monospace' }}>
+                      {d.scripture}
+                    </div>
+                  )}
+                </div>
+                <button className="btn btn-ghost" style={{ padding: '6px 12px' }} onClick={() => handleDelete(d.id)}>
+                  Eliminar
+                </button>
+              </div>
+              <p style={{ color: 'var(--ink-2)', fontSize: 14, lineHeight: 1.6 }}>
+                {d.body.substring(0, 200)}{d.body.length > 200 ? '...' : ''}
+              </p>
+              {d.linkedSong && (
+                <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ink-3)' }}>
+                  ♪ {d.linkedSong}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <h2>Nuevo devocional</h2>
+              <p>Escribe una reflexión para tu comunidad</p>
+            </div>
+            
+            <form onSubmit={handleSubmit}>
+              <div className="input-group">
+                <label className="input-label">Título *</label>
+                <input className="input-text" required value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} />
+              </div>
+              
+              <div className="input-group">
+                <label className="input-label">Referencia bíblica</label>
+                <input className="input-text" value={form.scripture} onChange={(e) => setForm({...form, scripture: e.target.value})} placeholder="Ej: Salmos 23:1-6" />
+              </div>
+              
+              <div className="input-group">
+                <label className="input-label">Contenido *</label>
+                <textarea 
+                  className="input-textarea" 
+                  required 
+                  value={form.body} 
+                  onChange={(e) => setForm({...form, body: e.target.value})} 
+                  placeholder="Escribe tu devocional aquí..."
+                  style={{ minHeight: 200 }}
+                />
+              </div>
+              
+              <div className="input-group">
+                <label className="input-label">Canción relacionada</label>
+                <input className="input-text" value={form.linkedSong} onChange={(e) => setForm({...form, linkedSong: e.target.value})} placeholder="Título de la canción" />
+              </div>
+              
+              <div className="modal-actions">
+                <button type="button" className="btn btn-ghost" onClick={() => setShowModal(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Publicar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+window.Devocionales = Devocionales;

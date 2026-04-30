@@ -1,0 +1,23 @@
+{
+  "name": "israstar-(1)",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-react": "^7.28.5"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.37.0",
+    "@vercel/blob": "^2.3.3"
+  }
+}
