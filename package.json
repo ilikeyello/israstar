@@ -17,7 +17,10 @@
     "@babel/preset-react": "^7.28.5"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.105.4",
     "@upstash/redis": "^1.37.0",
-    "@vercel/blob": "^2.3.3"
+    "@vercel/blob": "^2.3.3",
+    "dotenv": "^17.4.2",
+    "pg": "^8.20.0"
   }
 }

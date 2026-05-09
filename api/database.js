@@ -1,6 +1,9 @@
-import { Redis } from '@upstash/redis';
+import { createClient } from '@supabase/supabase-js';
 
-const redis = Redis.fromEnv();
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'isra';
 
 export default async function handler(req, res) {
@@ -15,11 +18,16 @@ export default async function handler(req, res) {
   // Handle GET request (Public)
   if (req.method === 'GET') {
     try {
-      const data = await redis.get('israstar_db');
-      if (!data) {
+      const { data, error } = await supabase
+        .from('site_data')
+        .select('data')
+        .eq('id', 'main')
+        .single();
+
+      if (error || !data || !data.data) {
         return res.status(200).json({ albumes: [], musica: [], devocionales: [] });
       }
-      return res.status(200).json(data);
+      return res.status(200).json(data.data);
     } catch (e) {
       console.error(e);
       return res.status(500).json({ error: 'Database connection failed' });
@@ -34,7 +42,15 @@ export default async function handler(req, res) {
     }
 
     try {
-      await redis.set('israstar_db', req.body);
+      const { error } = await supabase
+        .from('site_data')
+        .update({ data: req.body })
+        .eq('id', 'main');
+
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Failed to save to database' });
+      }
       return res.status(200).json({ success: true });
     } catch (e) {
       console.error(e);
