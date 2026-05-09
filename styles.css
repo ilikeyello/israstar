@@ -349,7 +349,7 @@ input, textarea { font: inherit; color: inherit; background: none; border: 0; ou
 .disco-ctrl:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 20px oklch(0.84 0.14 210 / 0.3); }
 
 /* Devocional */
-.dev { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 32px; }
+.dev { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 32px; }
 @media (max-width: 960px) { .dev { grid-template-columns: 1fr; } }
 .terminal {
   position: relative; border: 1px solid var(--line); border-radius: 16px; overflow: hidden;

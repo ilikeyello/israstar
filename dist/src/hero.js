@@ -5,18 +5,20 @@ function Hero({
   tweaks,
   nowPlaying,
   isPlaying,
-  togglePlay
+  togglePlay,
+  currentTime,
+  duration
 }) {
   const trackToDisplay = nowPlaying || LATEST_TRACK;
   const isThisPlaying = trackToDisplay && nowPlaying && nowPlaying.audioDataUrl === trackToDisplay.audioDataUrl && isPlaying;
-  const [progress, setProgress] = React.useState(0);
-  React.useEffect(() => {
-    if (!isThisPlaying) return;
-    const id = setInterval(() => setProgress(p => (p + 0.4) % 100), 100);
-    return () => clearInterval(id);
-  }, [isThisPlaying]);
-  const mm = Math.floor(progress / 100 * 222);
-  const t = `${String(Math.floor(mm / 60)).padStart(2, "0")}:${String(mm % 60).padStart(2, "0")}`;
+  const isCurrentTrack = trackToDisplay && nowPlaying && trackToDisplay.audioDataUrl === nowPlaying.audioDataUrl;
+  const formatTime = time => {
+    if (!time || isNaN(time)) return "00:00";
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+  const t = isCurrentTrack ? `${formatTime(currentTime)} / ${formatTime(duration)}` : "00:00 / 00:00";
   const t2 = tweaks || {};
   const speed = t2.rotateSpeed ?? 12; // seconds per revolution
   const axis = t2.rotateAxis ?? "y"; // 'y' horizontal, 'x' vertical, 'xy' both
@@ -120,7 +122,10 @@ function Hero({
   }, "2025 \xB7 11 \xB7 14"))), /*#__PURE__*/React.createElement("div", {
     className: "now-playing"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "np-art"
+    className: "np-art",
+    style: trackToDisplay?.coverDataUrl ? {
+      background: `url(${trackToDisplay.coverDataUrl}) center/cover`
+    } : {}
   }), /*#__PURE__*/React.createElement("div", {
     className: "np-meta"
   }, /*#__PURE__*/React.createElement("span", {

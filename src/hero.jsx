@@ -1,19 +1,18 @@
 // Hero section with 3D rotating logo
 
-function Hero({ go, tweaks, nowPlaying, isPlaying, togglePlay }) {
+function Hero({ go, tweaks, nowPlaying, isPlaying, togglePlay, currentTime, duration }) {
   const trackToDisplay = nowPlaying || LATEST_TRACK;
   const isThisPlaying = trackToDisplay && nowPlaying && nowPlaying.audioDataUrl === trackToDisplay.audioDataUrl && isPlaying;
+  const isCurrentTrack = trackToDisplay && nowPlaying && trackToDisplay.audioDataUrl === nowPlaying.audioDataUrl;
 
-  const [progress, setProgress] = React.useState(0);
+  const formatTime = (time) => {
+    if (!time || isNaN(time)) return "00:00";
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
 
-  React.useEffect(() => {
-    if (!isThisPlaying) return;
-    const id = setInterval(() => setProgress(p => (p + 0.4) % 100), 100);
-    return () => clearInterval(id);
-  }, [isThisPlaying]);
-
-  const mm = Math.floor((progress / 100) * 222);
-  const t = `${String(Math.floor(mm / 60)).padStart(2, "0")}:${String(mm % 60).padStart(2, "0")}`;
+  const t = isCurrentTrack ? `${formatTime(currentTime)} / ${formatTime(duration)}` : "00:00 / 00:00";
 
   const t2 = tweaks || {};
   const speed = t2.rotateSpeed ?? 12;   // seconds per revolution
@@ -95,7 +94,7 @@ function Hero({ go, tweaks, nowPlaying, isPlaying, togglePlay }) {
         </div>
 
         <div className="now-playing">
-          <div className="np-art"></div>
+          <div className="np-art" style={trackToDisplay?.coverDataUrl ? { background: `url(${trackToDisplay.coverDataUrl}) center/cover` } : {}}></div>
           <div className="np-meta">
             <span className="np-title">{trackToDisplay ? trackToDisplay.t : "Sin transmisión"}</span>
             <span className="np-sub">ISRA · {t}</span>

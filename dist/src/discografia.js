@@ -7,6 +7,7 @@ function Discografia({
 }) {
   const [idx, setIdx] = React.useState(0);
   const [active, setActive] = React.useState(0);
+  const [showLyrics, setShowLyrics] = React.useState(false);
   const a = ALBUMS.length > 0 ? ALBUMS[idx] : null;
   const prev = () => setIdx((idx - 1 + ALBUMS.length) % ALBUMS.length);
   const next = () => setIdx((idx + 1) % ALBUMS.length);
@@ -15,6 +16,9 @@ function Discografia({
   React.useEffect(() => {
     setActive(0);
   }, [idx]);
+  React.useEffect(() => {
+    setShowLyrics(false);
+  }, [active, idx]);
   return /*#__PURE__*/React.createElement("section", {
     id: "discografia",
     className: "section"
@@ -120,7 +124,22 @@ function Discografia({
       fontSize: 13,
       color: 'var(--ink-3)'
     }
-  }, "No hay pistas en este \xE1lbum."), /*#__PURE__*/React.createElement("div", {
+  }, "No hay pistas en este \xE1lbum."), showLyrics && activeTrack?.lyrics && /*#__PURE__*/React.createElement("div", {
+    className: "lyrics-panel",
+    style: {
+      marginTop: 24,
+      padding: 16,
+      background: 'rgba(255,255,255,0.03)',
+      borderRadius: 8,
+      maxHeight: 300,
+      overflowY: 'auto',
+      whiteSpace: 'pre-wrap',
+      fontFamily: 'JetBrains Mono, monospace',
+      fontSize: 13,
+      color: 'var(--ink-2)',
+      lineHeight: 1.6
+    }
+  }, activeTrack.lyrics), /*#__PURE__*/React.createElement("div", {
     className: "disco-controls"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn primary",
@@ -133,7 +152,12 @@ function Discografia({
     size: 7,
     color: "currentColor"
   }), " Reproducir")), /*#__PURE__*/React.createElement("button", {
-    className: "btn ghost"
-  }, "Letras")))));
+    className: "btn ghost",
+    onClick: () => setShowLyrics(!showLyrics),
+    disabled: !activeTrack?.lyrics,
+    style: {
+      opacity: !activeTrack?.lyrics ? 0.3 : 1
+    }
+  }, showLyrics ? "Ocultar letras" : "Letras")))));
 }
 window.Discografia = Discografia;

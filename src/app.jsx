@@ -20,6 +20,8 @@ function App() {
   // Global audio state
   const [nowPlaying, setNowPlaying] = React.useState(null);
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const [currentTime, setCurrentTime] = React.useState(0);
+  const [duration, setDuration] = React.useState(0);
   const audioRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -101,10 +103,12 @@ function App() {
             onEnded={() => setIsPlaying(false)}
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
+            onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
+            onLoadedMetadata={(e) => setDuration(e.target.duration)}
           />
         )}
         <Nav section={section} go={go} onOpenPalette={() => setPaletteOpen(true)} nowPlaying={nowPlaying} isPlaying={isPlaying} togglePlay={togglePlay} />
-        <Hero go={go} tweaks={tweaks} nowPlaying={nowPlaying} isPlaying={isPlaying} togglePlay={togglePlay} />
+        <Hero go={go} tweaks={tweaks} nowPlaying={nowPlaying} isPlaying={isPlaying} togglePlay={togglePlay} currentTime={currentTime} duration={duration} />
         <ScriptureStrip />
         <Discografia nowPlaying={nowPlaying} isPlaying={isPlaying} togglePlay={togglePlay} />
         <Devocional />

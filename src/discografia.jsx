@@ -3,6 +3,7 @@
 function Discografia({ nowPlaying, isPlaying, togglePlay }) {
   const [idx, setIdx] = React.useState(0);
   const [active, setActive] = React.useState(0);
+  const [showLyrics, setShowLyrics] = React.useState(false);
   
   const a = ALBUMS.length > 0 ? ALBUMS[idx] : null;
 
@@ -15,6 +16,10 @@ function Discografia({ nowPlaying, isPlaying, togglePlay }) {
   React.useEffect(() => {
     setActive(0);
   }, [idx]);
+
+  React.useEffect(() => {
+    setShowLyrics(false);
+  }, [active, idx]);
 
   return (
     <section id="discografia" className="section">
@@ -107,6 +112,12 @@ function Discografia({ nowPlaying, isPlaying, togglePlay }) {
             ) : (
               <div style={{ margin: '20px 0', fontSize: 13, color: 'var(--ink-3)' }}>No hay pistas en este álbum.</div>
             )}
+            
+            {showLyrics && activeTrack?.lyrics && (
+              <div className="lyrics-panel" style={{ marginTop: 24, padding: 16, background: 'rgba(255,255,255,0.03)', borderRadius: 8, maxHeight: 300, overflowY: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
+                {activeTrack.lyrics}
+              </div>
+            )}
 
             <div className="disco-controls">
               <button 
@@ -117,7 +128,14 @@ function Discografia({ nowPlaying, isPlaying, togglePlay }) {
               >
                 {isThisPlaying ? "Pausar" : <><TriMark size={7} color="currentColor" /> Reproducir</>}
               </button>
-              <button className="btn ghost">Letras</button>
+              <button 
+                className="btn ghost" 
+                onClick={() => setShowLyrics(!showLyrics)} 
+                disabled={!activeTrack?.lyrics} 
+                style={{ opacity: !activeTrack?.lyrics ? 0.3 : 1 }}
+              >
+                {showLyrics ? "Ocultar letras" : "Letras"}
+              </button>
             </div>
           </div>
         </div>

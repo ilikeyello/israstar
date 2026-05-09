@@ -19,6 +19,8 @@ function App() {
   // Global audio state
   const [nowPlaying, setNowPlaying] = React.useState(null);
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const [currentTime, setCurrentTime] = React.useState(0);
+  const [duration, setDuration] = React.useState(0);
   const audioRef = React.useRef(null);
   React.useEffect(() => {
     if (audioRef.current) {
@@ -107,7 +109,9 @@ function App() {
     src: nowPlaying.audioDataUrl,
     onEnded: () => setIsPlaying(false),
     onPlay: () => setIsPlaying(true),
-    onPause: () => setIsPlaying(false)
+    onPause: () => setIsPlaying(false),
+    onTimeUpdate: e => setCurrentTime(e.target.currentTime),
+    onLoadedMetadata: e => setDuration(e.target.duration)
   }), /*#__PURE__*/React.createElement(Nav, {
     section: section,
     go: go,
@@ -120,7 +124,9 @@ function App() {
     tweaks: tweaks,
     nowPlaying: nowPlaying,
     isPlaying: isPlaying,
-    togglePlay: togglePlay
+    togglePlay: togglePlay,
+    currentTime: currentTime,
+    duration: duration
   }), /*#__PURE__*/React.createElement(ScriptureStrip, null), /*#__PURE__*/React.createElement(Discografia, {
     nowPlaying: nowPlaying,
     isPlaying: isPlaying,

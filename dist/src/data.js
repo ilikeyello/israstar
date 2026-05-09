@@ -1,7 +1,7 @@
 // Content data for ISRASTAR — dynamic from IndexedDB
 
 let ALBUMS = [];
-let DEVOTIONAL = null;
+let DEVOCIONALES = [];
 let LATEST_TRACK = null;
 const PRODUCTS = [];
 const TOUR = [];
@@ -47,7 +47,9 @@ const loadDynamicData = () => {
         t: t.title,
         d: '—',
         // Length placeholder since we don't have metadata yet
-        audioDataUrl: t.audioDataUrl
+        audioDataUrl: t.audioDataUrl,
+        lyrics: t.lyrics,
+        coverDataUrl: al.coverDataUrl
       }))
     };
   });
@@ -57,35 +59,32 @@ const loadDynamicData = () => {
       n: String(latest.trackNumber || '0').padStart(2, '0'),
       t: latest.title,
       audioDataUrl: latest.audioDataUrl,
-      albumId: latest.albumId
+      albumId: latest.albumId,
+      lyrics: latest.lyrics,
+      coverDataUrl: adminAlbums.find(a => a.id === latest.albumId)?.coverDataUrl
     };
   } else {
     LATEST_TRACK = null;
   }
-  if (adminDevos.length > 0) {
-    // Take the most recent devocional
-    const latest = adminDevos[adminDevos.length - 1];
-    DEVOTIONAL = {
-      date: new Date(latest.createdAt || Date.now()).toLocaleDateString('es-ES', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      }).toUpperCase(),
-      title: latest.title,
-      quote: latest.scripture || "",
-      ref: "",
-      body: latest.body || "",
-      youtubeUrl: latest.youtubeUrl || "",
-      by: "Isra" + (latest.linkedSong ? ` · ♫ ${latest.linkedSong}` : "")
-    };
-  } else {
-    DEVOTIONAL = null;
-  }
+  DEVOCIONALES = adminDevos.map(d => ({
+    id: d.id || Math.random().toString(),
+    date: new Date(d.createdAt || Date.now()).toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).toUpperCase(),
+    title: d.title,
+    quote: d.scripture || "",
+    ref: "",
+    body: d.body || "",
+    youtubeUrl: d.youtubeUrl || "",
+    by: "Isra" + (d.linkedSong ? ` · ♫ ${d.linkedSong}` : "")
+  })).reverse();
   Object.assign(window, {
     ALBUMS,
     PRODUCTS,
     TOUR,
-    DEVOTIONAL,
+    DEVOCIONALES,
     SCRIPTURE,
     SCRIPT_MARQUEE,
     LATEST_TRACK
