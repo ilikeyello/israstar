@@ -1,11 +1,22 @@
 // Devocional — interactive scripture terminal + weekly devotional card
 
 function Devocional() {
-  const [history, setHistory] = React.useState([
-    { k: "sys", t: "ISRASTAR · TERMINAL DE ESCRITURA v2.6.1" },
-    { k: "sys", t: "Escribe una referencia (ej: Salmos 46:10) o una palabra." },
-    { k: "sys", t: "—" }
-  ]);
+  const [history, setHistory] = React.useState(() => {
+    const base = [
+      { k: "sys", t: "ISRASTAR · TERMINAL DE ESCRITURA v2.6.1" },
+      { k: "sys", t: "Escribe una referencia (ej: Salmos 46:10) o una palabra." },
+      { k: "sys", t: "—" }
+    ];
+    if (DEVOTIONAL && DEVOTIONAL.body) {
+      const lines = DEVOTIONAL.body.split('\n').filter(l => l.trim().length > 0);
+      base.push({ k: "sys", t: `INCOMING TRANSMISSION: ${DEVOTIONAL.title.toUpperCase()}` });
+      base.push({ k: "sep", t: "— — — — — — — — — —" });
+      lines.forEach(l => base.push({ k: "verse", t: l }));
+      base.push({ k: "sep", t: "— — — — — — — — — —" });
+    }
+    return base;
+  });
+  
   const [input, setInput] = React.useState("");
   const bodyRef = React.useRef(null);
 
@@ -27,6 +38,13 @@ function Devocional() {
     newItems.push({ k: "sep", t: "—" });
     setHistory(h => [...h, ...newItems]);
     setInput("");
+  };
+
+  const getYoutubeId = (url) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
   };
 
   return (
@@ -78,7 +96,18 @@ function Devocional() {
           <div className="devotional-card">
             <div className="devotional-date">{DEVOTIONAL.date}</div>
             <h3>{DEVOTIONAL.title}</h3>
-            {DEVOTIONAL.quote && (
+            
+            {DEVOTIONAL.youtubeUrl && getYoutubeId(DEVOTIONAL.youtubeUrl) ? (
+              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, marginTop: 16, marginBottom: 16, borderRadius: 8, overflow: 'hidden' }}>
+                <iframe 
+                  src={`https://www.youtube.com/embed/${getYoutubeId(DEVOTIONAL.youtubeUrl)}`} 
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+            ) : DEVOTIONAL.quote ? (
               <div className="devotional-quote">
                 "{DEVOTIONAL.quote}"
                 {DEVOTIONAL.ref && (
@@ -87,11 +116,16 @@ function Devocional() {
                   </div>
                 )}
               </div>
+            ) : null}
+            
+            {/* If no youtube video is provided, we show the body in the card. Otherwise it only appears in the terminal. */}
+            {(!DEVOTIONAL.youtubeUrl || !getYoutubeId(DEVOTIONAL.youtubeUrl)) && DEVOTIONAL.body && (
+              <div className="devotional-body">{DEVOTIONAL.body}</div>
             )}
-            <div className="devotional-body">{DEVOTIONAL.body}</div>
+            
             <div className="devotional-foot">
               <span>{DEVOTIONAL.by}</span>
-              <span>LEER ARCHIVO →</span>
+              <span>{DEVOTIONAL.youtubeUrl ? "VER VIDEO →" : "LEER ARCHIVO →"}</span>
             </div>
           </div>
         ) : (

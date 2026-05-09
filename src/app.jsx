@@ -17,6 +17,34 @@ function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [ready, setReady] = React.useState(false);
 
+  // Global audio state
+  const [nowPlaying, setNowPlaying] = React.useState(null);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const audioRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying && nowPlaying?.audioDataUrl) {
+        audioRef.current.play().catch(e => {
+          console.log("Auto-play prevented", e);
+          setIsPlaying(false);
+        });
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying, nowPlaying]);
+
+  const togglePlay = React.useCallback((track) => {
+    if (!track || !track.audioDataUrl) return;
+    if (nowPlaying?.audioDataUrl === track.audioDataUrl) {
+      setIsPlaying(!isPlaying);
+    } else {
+      setNowPlaying(track);
+      setIsPlaying(true);
+    }
+  }, [nowPlaying, isPlaying]);
+
   React.useEffect(() => {
     window.adminStorage.init().then(() => {
       window.loadDynamicData();
@@ -66,10 +94,19 @@ function App() {
       <div className="noise"></div>
       <div className="scan"></div>
       <div className="stage">
-        <Nav section={section} go={go} onOpenPalette={() => setPaletteOpen(true)} />
-        <Hero go={go} tweaks={tweaks} />
+        {nowPlaying && (
+          <audio 
+            ref={audioRef} 
+            src={nowPlaying.audioDataUrl} 
+            onEnded={() => setIsPlaying(false)}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          />
+        )}
+        <Nav section={section} go={go} onOpenPalette={() => setPaletteOpen(true)} nowPlaying={nowPlaying} isPlaying={isPlaying} togglePlay={togglePlay} />
+        <Hero go={go} tweaks={tweaks} nowPlaying={nowPlaying} isPlaying={isPlaying} togglePlay={togglePlay} />
         <ScriptureStrip />
-        <Discografia />
+        <Discografia nowPlaying={nowPlaying} isPlaying={isPlaying} togglePlay={togglePlay} />
         <Devocional />
         <Tienda />
         <Agenda />

@@ -2,110 +2,9 @@
 
 let ALBUMS = [];
 let DEVOTIONAL = null;
-const PRODUCTS = [{
-  id: "p1",
-  title: "Órbita",
-  kind: "Vinilo 180g",
-  price: "€28",
-  tag: "EDICIÓN LIMITADA",
-  art: "a",
-  stock: "137 / 500"
-}, {
-  id: "p2",
-  title: "Cielo raso",
-  kind: "CD firmado",
-  price: "€18",
-  tag: "FIRMADO",
-  art: "b",
-  stock: "Disponible"
-}, {
-  id: "p3",
-  title: "Hoodie Señal",
-  kind: "Merch — Algodón orgánico",
-  price: "€52",
-  tag: "NUEVO",
-  art: "c",
-  stock: "S · M · L · XL"
-}, {
-  id: "p4",
-  title: "Aurora",
-  kind: "Casete edición azul",
-  price: "€14",
-  tag: "REEDICIÓN",
-  art: "d",
-  stock: "Pocas unidades"
-}, {
-  id: "p5",
-  title: "Devocional tomo I",
-  kind: "Libro tapa dura",
-  price: "€22",
-  tag: "LIBRO",
-  art: "e",
-  stock: "Envío abril"
-}, {
-  id: "p6",
-  title: "Gorra Órbita",
-  kind: "Merch — Bordado",
-  price: "€32",
-  tag: "MERCH",
-  art: "f",
-  stock: "Talla única"
-}];
-const TOUR = [{
-  date: "2026 · 05 · 09",
-  day: "09",
-  mo: "MAY",
-  city: "Madrid",
-  co: "España",
-  venue: "La Riviera",
-  status: "live",
-  statusLabel: "ENTRADAS"
-}, {
-  date: "2026 · 05 · 16",
-  day: "16",
-  mo: "MAY",
-  city: "Barcelona",
-  co: "España",
-  venue: "Sala Razzmatazz",
-  status: "sold",
-  statusLabel: "AGOTADO"
-}, {
-  date: "2026 · 05 · 30",
-  day: "30",
-  mo: "MAY",
-  city: "Ciudad de México",
-  co: "México",
-  venue: "Auditorio BB",
-  status: "live",
-  statusLabel: "ENTRADAS"
-}, {
-  date: "2026 · 06 · 07",
-  day: "07",
-  mo: "JUN",
-  city: "Buenos Aires",
-  co: "Argentina",
-  venue: "Teatro Vorterix",
-  status: "live",
-  statusLabel: "ENTRADAS"
-}, {
-  date: "2026 · 06 · 14",
-  day: "14",
-  mo: "JUN",
-  city: "Bogotá",
-  co: "Colombia",
-  venue: "Teatro Mayor",
-  status: "soon",
-  statusLabel: "PRONTO"
-}, {
-  date: "2026 · 06 · 21",
-  day: "21",
-  mo: "JUN",
-  city: "Lima",
-  co: "Perú",
-  venue: "Arena Perú",
-  status: "soon",
-  statusLabel: "PRONTO"
-}];
+let LATEST_TRACK = null;
+const PRODUCTS = [];
+const TOUR = [];
 
 // Scripture corpus for the terminal search
 const SCRIPTURE = [{
@@ -152,11 +51,22 @@ const loadDynamicData = () => {
       }))
     };
   });
+  if (adminTracks.length > 0) {
+    const latest = adminTracks[adminTracks.length - 1];
+    LATEST_TRACK = {
+      n: String(latest.trackNumber || '0').padStart(2, '0'),
+      t: latest.title,
+      audioDataUrl: latest.audioDataUrl,
+      albumId: latest.albumId
+    };
+  } else {
+    LATEST_TRACK = null;
+  }
   if (adminDevos.length > 0) {
     // Take the most recent devocional
     const latest = adminDevos[adminDevos.length - 1];
     DEVOTIONAL = {
-      date: new Date(latest.createdAt).toLocaleDateString('es-ES', {
+      date: new Date(latest.createdAt || Date.now()).toLocaleDateString('es-ES', {
         day: 'numeric',
         month: 'short',
         year: 'numeric'
@@ -164,7 +74,8 @@ const loadDynamicData = () => {
       title: latest.title,
       quote: latest.scripture || "",
       ref: "",
-      body: latest.body,
+      body: latest.body || "",
+      youtubeUrl: latest.youtubeUrl || "",
       by: "Isra" + (latest.linkedSong ? ` · ♫ ${latest.linkedSong}` : "")
     };
   } else {
@@ -176,7 +87,8 @@ const loadDynamicData = () => {
     TOUR,
     DEVOTIONAL,
     SCRIPTURE,
-    SCRIPT_MARQUEE
+    SCRIPT_MARQUEE,
+    LATEST_TRACK
   });
 };
 window.loadDynamicData = loadDynamicData;

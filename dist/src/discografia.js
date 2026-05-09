@@ -1,32 +1,20 @@
 // Discografía — 3D-ish album carousel
 
-function Discografia() {
+function Discografia({
+  nowPlaying,
+  isPlaying,
+  togglePlay
+}) {
   const [idx, setIdx] = React.useState(0);
   const [active, setActive] = React.useState(0);
-  const audioRef = React.useRef(null);
-  const [isPlaying, setIsPlaying] = React.useState(false);
   const a = ALBUMS.length > 0 ? ALBUMS[idx] : null;
   const prev = () => setIdx((idx - 1 + ALBUMS.length) % ALBUMS.length);
   const next = () => setIdx((idx + 1) % ALBUMS.length);
   const activeTrack = a?.tracks?.[active];
+  const isThisPlaying = activeTrack && nowPlaying && nowPlaying.audioDataUrl === activeTrack.audioDataUrl && isPlaying;
   React.useEffect(() => {
     setActive(0);
   }, [idx]);
-  React.useEffect(() => {
-    if (audioRef.current && isPlaying && activeTrack?.audioDataUrl) {
-      audioRef.current.play().catch(e => console.log("Auto-play prevented", e));
-    }
-  }, [active, activeTrack]);
-  const togglePlay = () => {
-    if (!audioRef.current || !activeTrack?.audioDataUrl) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
-  };
   return /*#__PURE__*/React.createElement("section", {
     id: "discografia",
     className: "section"
@@ -104,42 +92,44 @@ function Discografia() {
     className: "disco-meta"
   }, /*#__PURE__*/React.createElement("div", {
     className: "track-num"
-  }, a.type), /*#__PURE__*/React.createElement("h3", null, a.title), /*#__PURE__*/React.createElement("div", {
+  }, a.type || 'ÁLBUM'), /*#__PURE__*/React.createElement("h3", null, a.title), /*#__PURE__*/React.createElement("div", {
     className: "year"
   }, a.year, " ", a.subtitle ? `· ${a.subtitle}` : ''), /*#__PURE__*/React.createElement("p", null, a.description), a.tracks && a.tracks.length > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "tracklist"
-  }, a.tracks.map((tr, i) => /*#__PURE__*/React.createElement("div", {
-    key: tr.n,
-    className: "tr" + (i === active ? " active" : ""),
-    onClick: () => setActive(i)
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "n"
-  }, tr.n), /*#__PURE__*/React.createElement("span", null, tr.t), /*#__PURE__*/React.createElement("span", {
-    className: "d"
-  }, i === active && isPlaying ? /*#__PURE__*/React.createElement(EqBars, null) : null), /*#__PURE__*/React.createElement("span", {
-    className: "d"
-  }, tr.audioDataUrl ? "▶" : "—")))) : /*#__PURE__*/React.createElement("div", {
+  }, a.tracks.map((tr, i) => {
+    const isTrPlaying = nowPlaying?.audioDataUrl === tr.audioDataUrl && isPlaying;
+    return /*#__PURE__*/React.createElement("div", {
+      key: tr.n,
+      className: "tr" + (i === active ? " active" : ""),
+      onClick: () => {
+        if (i === active) togglePlay(tr);else {
+          setActive(i);
+          togglePlay(tr);
+        }
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "n"
+    }, tr.n), /*#__PURE__*/React.createElement("span", null, tr.t), /*#__PURE__*/React.createElement("span", {
+      className: "d"
+    }, isTrPlaying ? /*#__PURE__*/React.createElement(EqBars, null) : null), /*#__PURE__*/React.createElement("span", {
+      className: "d"
+    }, tr.audioDataUrl ? "▶" : "—"));
+  })) : /*#__PURE__*/React.createElement("div", {
     style: {
       margin: '20px 0',
       fontSize: 13,
       color: 'var(--ink-3)'
     }
-  }, "No hay pistas en este \xE1lbum."), activeTrack?.audioDataUrl && /*#__PURE__*/React.createElement("audio", {
-    ref: audioRef,
-    src: activeTrack.audioDataUrl,
-    onEnded: () => setIsPlaying(false),
-    onPlay: () => setIsPlaying(true),
-    onPause: () => setIsPlaying(false)
-  }), /*#__PURE__*/React.createElement("div", {
+  }, "No hay pistas en este \xE1lbum."), /*#__PURE__*/React.createElement("div", {
     className: "disco-controls"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn primary",
-    onClick: togglePlay,
+    onClick: () => activeTrack && togglePlay(activeTrack),
     disabled: !activeTrack?.audioDataUrl,
     style: {
       opacity: !activeTrack?.audioDataUrl ? 0.5 : 1
     }
-  }, isPlaying ? "Pausar" : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(TriMark, {
+  }, isThisPlaying ? "Pausar" : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(TriMark, {
     size: 7,
     color: "currentColor"
   }), " Reproducir")), /*#__PURE__*/React.createElement("button", {

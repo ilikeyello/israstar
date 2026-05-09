@@ -3,7 +3,10 @@
 function Nav({
   section,
   go,
-  onOpenPalette
+  onOpenPalette,
+  nowPlaying,
+  isPlaying,
+  togglePlay
 }) {
   const links = [{
     id: "hero",
@@ -21,17 +24,6 @@ function Nav({
     id: "agenda",
     label: "Agenda"
   }];
-  const [utc, setUtc] = React.useState("");
-  React.useEffect(() => {
-    const id = setInterval(() => {
-      const d = new Date();
-      const hh = String(d.getUTCHours()).padStart(2, "0");
-      const mm = String(d.getUTCMinutes()).padStart(2, "0");
-      const ss = String(d.getUTCSeconds()).padStart(2, "0");
-      setUtc(`${hh}:${mm}:${ss} UTC`);
-    }, 1000);
-    return () => clearInterval(id);
-  }, []);
   return /*#__PURE__*/React.createElement("nav", {
     className: "nav"
   }, /*#__PURE__*/React.createElement("div", {
@@ -43,11 +35,7 @@ function Nav({
       e.preventDefault();
       go("hero");
     }
-  }, /*#__PURE__*/React.createElement(Wordmark, null)), /*#__PURE__*/React.createElement("span", {
-    className: "chip"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "dot"
-  }), " EN VIVO \xB7 ", utc)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Wordmark, null))), /*#__PURE__*/React.createElement("div", {
     className: "nav-links"
   }, links.map(l => /*#__PURE__*/React.createElement("a", {
     key: l.id,
@@ -65,7 +53,26 @@ function Nav({
     style: {
       cursor: "pointer"
     }
-  }, "BUSCAR ", /*#__PURE__*/React.createElement(Kbd, null, "\u2318"), /*#__PURE__*/React.createElement(Kbd, null, "K")), /*#__PURE__*/React.createElement("a", {
+  }, "BUSCAR ", /*#__PURE__*/React.createElement(Kbd, null, "\u2318"), /*#__PURE__*/React.createElement(Kbd, null, "K")), nowPlaying ? /*#__PURE__*/React.createElement("button", {
+    className: "btn cyan",
+    onClick: () => togglePlay(nowPlaying),
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 6,
+      cursor: 'pointer'
+    }
+  }, isPlaying ? /*#__PURE__*/React.createElement(EqBars, null) : /*#__PURE__*/React.createElement(TriMark, {
+    size: 7,
+    color: "currentColor"
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      maxWidth: 120,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
+    }
+  }, nowPlaying.t)) : /*#__PURE__*/React.createElement("a", {
     className: "btn cyan",
     href: "#discografia",
     onClick: e => {

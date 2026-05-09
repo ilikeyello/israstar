@@ -1,6 +1,6 @@
 // Top navigation
 
-function Nav({ section, go, onOpenPalette }) {
+function Nav({ section, go, onOpenPalette, nowPlaying, isPlaying, togglePlay }) {
   const links = [
     { id: "hero", label: "Inicio" },
     { id: "discografia", label: "Discografía" },
@@ -8,24 +8,12 @@ function Nav({ section, go, onOpenPalette }) {
     { id: "tienda", label: "Tienda" },
     { id: "agenda", label: "Agenda" }
   ];
-  const [utc, setUtc] = React.useState("");
-  React.useEffect(() => {
-    const id = setInterval(() => {
-      const d = new Date();
-      const hh = String(d.getUTCHours()).padStart(2, "0");
-      const mm = String(d.getUTCMinutes()).padStart(2, "0");
-      const ss = String(d.getUTCSeconds()).padStart(2, "0");
-      setUtc(`${hh}:${mm}:${ss} UTC`);
-    }, 1000);
-    return () => clearInterval(id);
-  }, []);
   return (
     <nav className="nav">
       <div className="nav-left">
         <a href="#hero" className="nav-logo" onClick={(e) => { e.preventDefault(); go("hero"); }}>
           <Wordmark />
         </a>
-        <span className="chip"><span className="dot"></span> EN VIVO · {utc}</span>
       </div>
       <div className="nav-links">
         {links.map(l => (
@@ -40,9 +28,16 @@ function Nav({ section, go, onOpenPalette }) {
         <button className="chip" onClick={onOpenPalette} style={{ cursor: "pointer" }}>
           BUSCAR <Kbd>⌘</Kbd><Kbd>K</Kbd>
         </button>
-        <a className="btn cyan" href="#discografia" onClick={(e) => { e.preventDefault(); go("discografia"); }}>
-          <TriMark size={7} /> Escuchar ahora
-        </a>
+        {nowPlaying ? (
+          <button className="btn cyan" onClick={() => togglePlay(nowPlaying)} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+            {isPlaying ? <EqBars /> : <TriMark size={7} color="currentColor" />}
+            <span style={{ maxWidth: 120, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nowPlaying.t}</span>
+          </button>
+        ) : (
+          <a className="btn cyan" href="#discografia" onClick={(e) => { e.preventDefault(); go("discografia"); }}>
+            <TriMark size={7} /> Escuchar ahora
+          </a>
+        )}
       </div>
     </nav>
   );

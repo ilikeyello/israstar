@@ -1,14 +1,16 @@
 // Hero section with 3D rotating logo
 
-function Hero({ go, tweaks }) {
-  const [playing, setPlaying] = React.useState(false);
-  const [progress, setProgress] = React.useState(32);
+function Hero({ go, tweaks, nowPlaying, isPlaying, togglePlay }) {
+  const trackToDisplay = nowPlaying || LATEST_TRACK;
+  const isThisPlaying = trackToDisplay && nowPlaying && nowPlaying.audioDataUrl === trackToDisplay.audioDataUrl && isPlaying;
+
+  const [progress, setProgress] = React.useState(0);
 
   React.useEffect(() => {
-    if (!playing) return;
+    if (!isThisPlaying) return;
     const id = setInterval(() => setProgress(p => (p + 0.4) % 100), 100);
     return () => clearInterval(id);
-  }, [playing]);
+  }, [isThisPlaying]);
 
   const mm = Math.floor((progress / 100) * 222);
   const t = `${String(Math.floor(mm / 60)).padStart(2, "0")}:${String(mm % 60).padStart(2, "0")}`;
@@ -40,9 +42,9 @@ function Hero({ go, tweaks }) {
           música, las escrituras y los conciertos se encuentran en la misma frecuencia.
         </p>
         <div className="hero-actions">
-          <button className="btn primary" onClick={() => setPlaying(!playing)}>
+          <button className="btn primary" onClick={() => LATEST_TRACK && togglePlay(LATEST_TRACK)}>
             <TriMark size={8} color="currentColor" />
-            {playing ? "Pausar sencillo" : "Escuchar último sencillo"}
+            {isPlaying && nowPlaying?.audioDataUrl === LATEST_TRACK?.audioDataUrl ? "Pausar sencillo" : "Escuchar último sencillo"}
           </button>
           <button className="btn ghost" onClick={() => go("discografia")}>
             Ver discografía →
@@ -95,11 +97,11 @@ function Hero({ go, tweaks }) {
         <div className="now-playing">
           <div className="np-art"></div>
           <div className="np-meta">
-            <span className="np-title">Gravedad</span>
-            <span className="np-sub">ISRA · ÓRBITA · {t} / 03:42</span>
+            <span className="np-title">{trackToDisplay ? trackToDisplay.t : "Sin transmisión"}</span>
+            <span className="np-sub">ISRA · {t}</span>
           </div>
-          <button className="play-btn" onClick={() => setPlaying(!playing)} aria-label="play">
-            {playing ? <EqBars /> : <TriMark size={9} color="currentColor" />}
+          <button className="play-btn" onClick={() => trackToDisplay && togglePlay(trackToDisplay)} aria-label="play">
+            {isThisPlaying ? <EqBars /> : <TriMark size={9} color="currentColor" />}
           </button>
         </div>
       </div>

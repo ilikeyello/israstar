@@ -4,7 +4,7 @@ function Devocionales() {
   const [devos, setDevos] = React.useState(adminStorage.getAll('devocionales'));
   const [showModal, setShowModal] = React.useState(false);
   const [form, setForm] = React.useState({
-    title: '', body: '', scripture: '', linkedSong: ''
+    title: '', body: '', scripture: '', linkedSong: '', youtubeUrl: ''
   });
   
   const handleSubmit = (e) => {
@@ -12,7 +12,7 @@ function Devocionales() {
     adminStorage.add('devocionales', form);
     setDevos(adminStorage.getAll('devocionales'));
     setShowModal(false);
-    setForm({ title: '', body: '', scripture: '', linkedSong: '' });
+    setForm({ title: '', body: '', scripture: '', linkedSong: '', youtubeUrl: '' });
   };
   
   const handleDelete = (id) => {
@@ -70,8 +70,13 @@ function Devocionales() {
               <p style={{ color: 'var(--ink-2)', fontSize: 14, lineHeight: 1.6 }}>
                 {d.body.substring(0, 200)}{d.body.length > 200 ? '...' : ''}
               </p>
-              {d.linkedSong && (
+              {d.youtubeUrl && (
                 <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ink-3)' }}>
+                  ▶ {d.youtubeUrl}
+                </div>
+              )}
+              {d.linkedSong && (
+                <div style={{ marginTop: 4, fontSize: 12, color: 'var(--ink-3)' }}>
                   ♪ {d.linkedSong}
                 </div>
               )}
@@ -109,6 +114,11 @@ function Devocionales() {
                   placeholder="Escribe tu devocional aquí..."
                   style={{ minHeight: 200 }}
                 />
+              </div>
+
+              <div className="input-group">
+                <label className="input-label">Enlace de YouTube</label>
+                <input className="input-text" value={form.youtubeUrl} onChange={(e) => setForm({...form, youtubeUrl: e.target.value})} placeholder="https://youtube.com/watch?v=..." />
               </div>
               
               <div className="input-group">

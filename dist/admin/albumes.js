@@ -26,12 +26,24 @@ function Albumes() {
           headers: {
             'Authorization': 'Bearer ' + window.adminStorage.authToken,
             'x-filename': form.coverFile.name
-          },
-          body: form.coverFile
+          }
         });
         const data = await res.json();
-        if (data.success) {
-          finalCoverUrl = data.url;
+        if (data.success && data.signedUrl) {
+          const uploadRes = await fetch(data.signedUrl, {
+            method: 'PUT',
+            body: form.coverFile,
+            headers: {
+              'Content-Type': form.coverFile.type || 'application/octet-stream'
+            }
+          });
+          if (uploadRes.ok) {
+            finalCoverUrl = data.url;
+          } else {
+            alert('Error subiendo imagen a Supabase.');
+            setUploading(false);
+            return;
+          }
         } else {
           alert('Error subiendo imagen: ' + data.error);
           setUploading(false);

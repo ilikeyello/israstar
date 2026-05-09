@@ -2,15 +2,19 @@
 
 function Hero({
   go,
-  tweaks
+  tweaks,
+  nowPlaying,
+  isPlaying,
+  togglePlay
 }) {
-  const [playing, setPlaying] = React.useState(false);
-  const [progress, setProgress] = React.useState(32);
+  const trackToDisplay = nowPlaying || LATEST_TRACK;
+  const isThisPlaying = trackToDisplay && nowPlaying && nowPlaying.audioDataUrl === trackToDisplay.audioDataUrl && isPlaying;
+  const [progress, setProgress] = React.useState(0);
   React.useEffect(() => {
-    if (!playing) return;
+    if (!isThisPlaying) return;
     const id = setInterval(() => setProgress(p => (p + 0.4) % 100), 100);
     return () => clearInterval(id);
-  }, [playing]);
+  }, [isThisPlaying]);
   const mm = Math.floor(progress / 100 * 222);
   const t = `${String(Math.floor(mm / 60)).padStart(2, "0")}:${String(mm % 60).padStart(2, "0")}`;
   const t2 = tweaks || {};
@@ -41,11 +45,11 @@ function Hero({
     className: "hero-actions"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn primary",
-    onClick: () => setPlaying(!playing)
+    onClick: () => LATEST_TRACK && togglePlay(LATEST_TRACK)
   }, /*#__PURE__*/React.createElement(TriMark, {
     size: 8,
     color: "currentColor"
-  }), playing ? "Pausar sencillo" : "Escuchar último sencillo"), /*#__PURE__*/React.createElement("button", {
+  }), isPlaying && nowPlaying?.audioDataUrl === LATEST_TRACK?.audioDataUrl ? "Pausar sencillo" : "Escuchar último sencillo"), /*#__PURE__*/React.createElement("button", {
     className: "btn ghost",
     onClick: () => go("discografia")
   }, "Ver discograf\xEDa \u2192"), /*#__PURE__*/React.createElement("span", {
@@ -121,13 +125,13 @@ function Hero({
     className: "np-meta"
   }, /*#__PURE__*/React.createElement("span", {
     className: "np-title"
-  }, "Gravedad"), /*#__PURE__*/React.createElement("span", {
+  }, trackToDisplay ? trackToDisplay.t : "Sin transmisión"), /*#__PURE__*/React.createElement("span", {
     className: "np-sub"
-  }, "ISRA \xB7 \xD3RBITA \xB7 ", t, " / 03:42")), /*#__PURE__*/React.createElement("button", {
+  }, "ISRA \xB7 ", t)), /*#__PURE__*/React.createElement("button", {
     className: "play-btn",
-    onClick: () => setPlaying(!playing),
+    onClick: () => trackToDisplay && togglePlay(trackToDisplay),
     "aria-label": "play"
-  }, playing ? /*#__PURE__*/React.createElement(EqBars, null) : /*#__PURE__*/React.createElement(TriMark, {
+  }, isThisPlaying ? /*#__PURE__*/React.createElement(EqBars, null) : /*#__PURE__*/React.createElement(TriMark, {
     size: 9,
     color: "currentColor"
   })))));

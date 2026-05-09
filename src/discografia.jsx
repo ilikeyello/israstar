@@ -1,10 +1,8 @@
 // Discografía — 3D-ish album carousel
 
-function Discografia() {
+function Discografia({ nowPlaying, isPlaying, togglePlay }) {
   const [idx, setIdx] = React.useState(0);
   const [active, setActive] = React.useState(0);
-  const audioRef = React.useRef(null);
-  const [isPlaying, setIsPlaying] = React.useState(false);
   
   const a = ALBUMS.length > 0 ? ALBUMS[idx] : null;
 
@@ -12,27 +10,11 @@ function Discografia() {
   const next = () => setIdx((idx + 1) % ALBUMS.length);
 
   const activeTrack = a?.tracks?.[active];
+  const isThisPlaying = activeTrack && nowPlaying && nowPlaying.audioDataUrl === activeTrack.audioDataUrl && isPlaying;
 
   React.useEffect(() => {
     setActive(0);
   }, [idx]);
-
-  React.useEffect(() => {
-    if (audioRef.current && isPlaying && activeTrack?.audioDataUrl) {
-      audioRef.current.play().catch(e => console.log("Auto-play prevented", e));
-    }
-  }, [active, activeTrack]);
-
-  const togglePlay = () => {
-    if (!audioRef.current || !activeTrack?.audioDataUrl) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
-  };
 
   return (
     <section id="discografia" className="section">
@@ -95,50 +77,45 @@ function Discografia() {
           </div>
 
           <div className="disco-meta">
-            <div className="track-num">{a.type}</div>
+            <div className="track-num">{a.type || 'ÁLBUM'}</div>
             <h3>{a.title}</h3>
             <div className="year">{a.year} {a.subtitle ? `· ${a.subtitle}` : ''}</div>
             <p>{a.description}</p>
             
             {a.tracks && a.tracks.length > 0 ? (
               <div className="tracklist">
-                {a.tracks.map((tr, i) => (
+                {a.tracks.map((tr, i) => {
+                  const isTrPlaying = nowPlaying?.audioDataUrl === tr.audioDataUrl && isPlaying;
+                  return (
                   <div
                     key={tr.n}
                     className={"tr" + (i === active ? " active" : "")}
-                    onClick={() => setActive(i)}
+                    onClick={() => {
+                      if (i === active) togglePlay(tr);
+                      else { setActive(i); togglePlay(tr); }
+                    }}
                   >
                     <span className="n">{tr.n}</span>
                     <span>{tr.t}</span>
                     <span className="d">
-                      {i === active && isPlaying ? <EqBars /> : null}
+                      {isTrPlaying ? <EqBars /> : null}
                     </span>
                     <span className="d">{tr.audioDataUrl ? "▶" : "—"}</span>
                   </div>
-                ))}
+                )})}
               </div>
             ) : (
               <div style={{ margin: '20px 0', fontSize: 13, color: 'var(--ink-3)' }}>No hay pistas en este álbum.</div>
-            )}
-            
-            {activeTrack?.audioDataUrl && (
-              <audio 
-                ref={audioRef} 
-                src={activeTrack.audioDataUrl} 
-                onEnded={() => setIsPlaying(false)} 
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-              />
             )}
 
             <div className="disco-controls">
               <button 
                 className="btn primary" 
-                onClick={togglePlay}
+                onClick={() => activeTrack && togglePlay(activeTrack)}
                 disabled={!activeTrack?.audioDataUrl}
                 style={{ opacity: !activeTrack?.audioDataUrl ? 0.5 : 1 }}
               >
-                {isPlaying ? "Pausar" : <><TriMark size={7} color="currentColor" /> Reproducir</>}
+                {isThisPlaying ? "Pausar" : <><TriMark size={7} color="currentColor" /> Reproducir</>}
               </button>
               <button className="btn ghost">Letras</button>
             </div>

@@ -15,6 +15,32 @@ function App() {
   const [paletteOpen, setPaletteOpen] = React.useState(false);
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [ready, setReady] = React.useState(false);
+
+  // Global audio state
+  const [nowPlaying, setNowPlaying] = React.useState(null);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const audioRef = React.useRef(null);
+  React.useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying && nowPlaying?.audioDataUrl) {
+        audioRef.current.play().catch(e => {
+          console.log("Auto-play prevented", e);
+          setIsPlaying(false);
+        });
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying, nowPlaying]);
+  const togglePlay = React.useCallback(track => {
+    if (!track || !track.audioDataUrl) return;
+    if (nowPlaying?.audioDataUrl === track.audioDataUrl) {
+      setIsPlaying(!isPlaying);
+    } else {
+      setNowPlaying(track);
+      setIsPlaying(true);
+    }
+  }, [nowPlaying, isPlaying]);
   React.useEffect(() => {
     window.adminStorage.init().then(() => {
       window.loadDynamicData();
@@ -76,14 +102,30 @@ function App() {
     className: "scan"
   }), /*#__PURE__*/React.createElement("div", {
     className: "stage"
-  }, /*#__PURE__*/React.createElement(Nav, {
+  }, nowPlaying && /*#__PURE__*/React.createElement("audio", {
+    ref: audioRef,
+    src: nowPlaying.audioDataUrl,
+    onEnded: () => setIsPlaying(false),
+    onPlay: () => setIsPlaying(true),
+    onPause: () => setIsPlaying(false)
+  }), /*#__PURE__*/React.createElement(Nav, {
     section: section,
     go: go,
-    onOpenPalette: () => setPaletteOpen(true)
+    onOpenPalette: () => setPaletteOpen(true),
+    nowPlaying: nowPlaying,
+    isPlaying: isPlaying,
+    togglePlay: togglePlay
   }), /*#__PURE__*/React.createElement(Hero, {
     go: go,
-    tweaks: tweaks
-  }), /*#__PURE__*/React.createElement(ScriptureStrip, null), /*#__PURE__*/React.createElement(Discografia, null), /*#__PURE__*/React.createElement(Devocional, null), /*#__PURE__*/React.createElement(Tienda, null), /*#__PURE__*/React.createElement(Agenda, null), /*#__PURE__*/React.createElement(Footer, null)), /*#__PURE__*/React.createElement(Palette, {
+    tweaks: tweaks,
+    nowPlaying: nowPlaying,
+    isPlaying: isPlaying,
+    togglePlay: togglePlay
+  }), /*#__PURE__*/React.createElement(ScriptureStrip, null), /*#__PURE__*/React.createElement(Discografia, {
+    nowPlaying: nowPlaying,
+    isPlaying: isPlaying,
+    togglePlay: togglePlay
+  }), /*#__PURE__*/React.createElement(Devocional, null), /*#__PURE__*/React.createElement(Tienda, null), /*#__PURE__*/React.createElement(Agenda, null), /*#__PURE__*/React.createElement(Footer, null)), /*#__PURE__*/React.createElement(Palette, {
     open: paletteOpen,
     onClose: () => setPaletteOpen(false),
     go: go

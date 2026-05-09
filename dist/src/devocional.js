@@ -1,16 +1,38 @@
 // Devocional — interactive scripture terminal + weekly devotional card
 
 function Devocional() {
-  const [history, setHistory] = React.useState([{
-    k: "sys",
-    t: "ISRASTAR · TERMINAL DE ESCRITURA v2.6.1"
-  }, {
-    k: "sys",
-    t: "Escribe una referencia (ej: Salmos 46:10) o una palabra."
-  }, {
-    k: "sys",
-    t: "—"
-  }]);
+  const [history, setHistory] = React.useState(() => {
+    const base = [{
+      k: "sys",
+      t: "ISRASTAR · TERMINAL DE ESCRITURA v2.6.1"
+    }, {
+      k: "sys",
+      t: "Escribe una referencia (ej: Salmos 46:10) o una palabra."
+    }, {
+      k: "sys",
+      t: "—"
+    }];
+    if (DEVOTIONAL && DEVOTIONAL.body) {
+      const lines = DEVOTIONAL.body.split('\n').filter(l => l.trim().length > 0);
+      base.push({
+        k: "sys",
+        t: `INCOMING TRANSMISSION: ${DEVOTIONAL.title.toUpperCase()}`
+      });
+      base.push({
+        k: "sep",
+        t: "— — — — — — — — — —"
+      });
+      lines.forEach(l => base.push({
+        k: "verse",
+        t: l
+      }));
+      base.push({
+        k: "sep",
+        t: "— — — — — — — — — —"
+      });
+    }
+    return base;
+  });
   const [input, setInput] = React.useState("");
   const bodyRef = React.useRef(null);
   React.useEffect(() => {
@@ -45,6 +67,12 @@ function Devocional() {
     });
     setHistory(h => [...h, ...newItems]);
     setInput("");
+  };
+  const getYoutubeId = url => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
   };
   return /*#__PURE__*/React.createElement("section", {
     id: "devocional",
@@ -120,7 +148,29 @@ function Devocional() {
     className: "devotional-card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "devotional-date"
-  }, DEVOTIONAL.date), /*#__PURE__*/React.createElement("h3", null, DEVOTIONAL.title), DEVOTIONAL.quote && /*#__PURE__*/React.createElement("div", {
+  }, DEVOTIONAL.date), /*#__PURE__*/React.createElement("h3", null, DEVOTIONAL.title), DEVOTIONAL.youtubeUrl && getYoutubeId(DEVOTIONAL.youtubeUrl) ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'relative',
+      paddingBottom: '56.25%',
+      height: 0,
+      marginTop: 16,
+      marginBottom: 16,
+      borderRadius: 8,
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement("iframe", {
+    src: `https://www.youtube.com/embed/${getYoutubeId(DEVOTIONAL.youtubeUrl)}`,
+    style: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%'
+    },
+    frameBorder: "0",
+    allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+    allowFullScreen: true
+  })) : DEVOTIONAL.quote ? /*#__PURE__*/React.createElement("div", {
     className: "devotional-quote"
   }, "\"", DEVOTIONAL.quote, "\"", DEVOTIONAL.ref && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -131,11 +181,11 @@ function Devocional() {
       marginTop: 8,
       letterSpacing: "0.14em"
     }
-  }, "\u2014 ", DEVOTIONAL.ref)), /*#__PURE__*/React.createElement("div", {
+  }, "\u2014 ", DEVOTIONAL.ref)) : null, (!DEVOTIONAL.youtubeUrl || !getYoutubeId(DEVOTIONAL.youtubeUrl)) && DEVOTIONAL.body && /*#__PURE__*/React.createElement("div", {
     className: "devotional-body"
   }, DEVOTIONAL.body), /*#__PURE__*/React.createElement("div", {
     className: "devotional-foot"
-  }, /*#__PURE__*/React.createElement("span", null, DEVOTIONAL.by), /*#__PURE__*/React.createElement("span", null, "LEER ARCHIVO \u2192"))) : /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null, DEVOTIONAL.by), /*#__PURE__*/React.createElement("span", null, DEVOTIONAL.youtubeUrl ? "VER VIDEO →" : "LEER ARCHIVO →"))) : /*#__PURE__*/React.createElement("div", {
     className: "devotional-card",
     style: {
       display: 'grid',

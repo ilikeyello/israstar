@@ -7,7 +7,8 @@ function Devocionales() {
     title: '',
     body: '',
     scripture: '',
-    linkedSong: ''
+    linkedSong: '',
+    youtubeUrl: ''
   });
   const handleSubmit = e => {
     e.preventDefault();
@@ -18,7 +19,8 @@ function Devocionales() {
       title: '',
       body: '',
       scripture: '',
-      linkedSong: ''
+      linkedSong: '',
+      youtubeUrl: ''
     });
   };
   const handleDelete = id => {
@@ -90,9 +92,15 @@ function Devocionales() {
       fontSize: 14,
       lineHeight: 1.6
     }
-  }, d.body.substring(0, 200), d.body.length > 200 ? '...' : ''), d.linkedSong && /*#__PURE__*/React.createElement("div", {
+  }, d.body.substring(0, 200), d.body.length > 200 ? '...' : ''), d.youtubeUrl && /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 12,
+      fontSize: 12,
+      color: 'var(--ink-3)'
+    }
+  }, "\u25B6 ", d.youtubeUrl), d.linkedSong && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 4,
       fontSize: 12,
       color: 'var(--ink-3)'
     }
@@ -146,6 +154,18 @@ function Devocionales() {
     style: {
       minHeight: 200
     }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "input-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "input-label"
+  }, "Enlace de YouTube"), /*#__PURE__*/React.createElement("input", {
+    className: "input-text",
+    value: form.youtubeUrl,
+    onChange: e => setForm({
+      ...form,
+      youtubeUrl: e.target.value
+    }),
+    placeholder: "https://youtube.com/watch?v=..."
   })), /*#__PURE__*/React.createElement("div", {
     className: "input-group"
   }, /*#__PURE__*/React.createElement("label", {
