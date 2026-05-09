@@ -24,12 +24,24 @@ function Musica() {
           headers: { 
             'Authorization': 'Bearer ' + window.adminStorage.authToken,
             'x-filename': form.audioFile.name
-          },
-          body: form.audioFile
+          }
         });
         const data = await res.json();
-        if (data.success) {
-          finalAudioUrl = data.url;
+        if (data.success && data.signedUrl) {
+          const uploadRes = await fetch(data.signedUrl, {
+            method: 'PUT',
+            body: form.audioFile,
+            headers: {
+              'Content-Type': form.audioFile.type || 'application/octet-stream'
+            }
+          });
+          if (uploadRes.ok) {
+            finalAudioUrl = data.url;
+          } else {
+            alert('Error subiendo audio a Supabase.');
+            setUploading(false);
+            return;
+          }
         } else {
           alert('Error subiendo audio: ' + data.error);
           setUploading(false);

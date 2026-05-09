@@ -6,21 +6,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'isra';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-// Helper to read stream into buffer
-async function buffer(readable) {
-  const chunks = [];
-  for await (const chunk of readable) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-  }
-  return Buffer.concat(chunks);
-}
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, x-filename');
@@ -44,33 +29,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    const fileBuffer = await buffer(req);
-    
-    // Generate unique filename to avoid collisions
     const timestamp = Date.now();
     const cleanFilename = originalFilename.replace(/[^a-zA-Z0-9.\-_]/g, '');
     const filename = `${timestamp}-${cleanFilename}`;
 
     const { data, error } = await supabase.storage
       .from('media')
-      .upload(filename, fileBuffer, {
-        contentType: req.headers['content-type'] || 'application/octet-stream',
-        upsert: false
-      });
+      .createSignedUploadUrl(filename);
 
     if (error) {
-      console.error('Supabase upload error:', error);
-      return res.status(500).json({ error: 'Upload a Supabase falló.' });
+      console.error('Signed URL error:', error);
+      return res.status(500).json({ error: 'Error generando URL de subida.' });
     }
 
-    // Get the public URL
     const { data: { publicUrl } } = supabase.storage
       .from('media')
-      .getPublicUrl(data.path);
+      .getPublicUrl(filename);
 
-    return res.status(200).json({ success: true, url: publicUrl, filename: data.path });
+    return res.status(200).json({ success: true, signedUrl: data.signedUrl, url: publicUrl });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Error procesando la subida.' });
+    return res.status(500).json({ error: 'Error procesando la solicitud.' });
   }
 }
