@@ -21,15 +21,7 @@ function Devocional() {
   }, /*#__PURE__*/React.createElement("div", null, "ACTUALIZADO SEMANAL"), /*#__PURE__*/React.createElement("div", null, DEVOCIONALES.length, " PUBLICACIONES"), /*#__PURE__*/React.createElement("div", null, "CORPUS: RVR 1960"))), /*#__PURE__*/React.createElement("div", {
     className: "dev"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "dev-selector",
-    style: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 12,
-      maxHeight: 600,
-      overflowY: 'auto',
-      paddingRight: 16
-    }
+    className: "dev-selector"
   }, DEVOCIONALES.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       color: 'var(--ink-3)',

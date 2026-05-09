@@ -27,7 +27,7 @@ function Devocional() {
       </div>
 
       <div className="dev">
-        <div className="dev-selector" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 600, overflowY: 'auto', paddingRight: 16 }}>
+        <div className="dev-selector">
           {DEVOCIONALES.length === 0 ? (
             <div style={{ color: 'var(--ink-3)', fontFamily: 'JetBrains Mono, monospace' }}>SIN DATOS</div>
           ) : DEVOCIONALES.map((d, i) => (
