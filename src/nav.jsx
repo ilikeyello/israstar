@@ -21,7 +21,7 @@ function Nav({ section, go, onOpenPalette, nowPlaying, isPlaying, togglePlay }) 
       <div className="nav-top">
         <div className="nav-left">
           <a href="#hero" className="nav-logo" onClick={(e) => { e.preventDefault(); handleGo("hero"); }}>
-            <Wordmark />
+            <Wordmark height={36} />
           </a>
         </div>
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">

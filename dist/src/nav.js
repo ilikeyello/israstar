@@ -42,7 +42,9 @@ function Nav({
       e.preventDefault();
       handleGo("hero");
     }
-  }, /*#__PURE__*/React.createElement(Wordmark, null))), /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement(Wordmark, {
+    height: 36
+  }))), /*#__PURE__*/React.createElement("button", {
     className: "hamburger",
     onClick: () => setMenuOpen(!menuOpen),
     "aria-label": "Menu"
