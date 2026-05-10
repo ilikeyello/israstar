@@ -80,6 +80,11 @@ const loadDynamicData = () => {
     youtubeUrl: d.youtubeUrl || "",
     by: "Isra" + (d.linkedSong ? ` · ♫ ${d.linkedSong}` : "")
   })).reverse();
+  const adminSettings = window.adminStorage.get('settings') || {};
+  const SITE_SETTINGS = {
+    contactEmail: adminSettings.contactEmail || 'Hola@israstar.com',
+    links: adminSettings.links || {}
+  };
   Object.assign(window, {
     ALBUMS,
     PRODUCTS,
@@ -87,7 +92,8 @@ const loadDynamicData = () => {
     DEVOCIONALES,
     SCRIPTURE,
     SCRIPT_MARQUEE,
-    LATEST_TRACK
+    LATEST_TRACK,
+    SITE_SETTINGS
   });
 };
 window.loadDynamicData = loadDynamicData;

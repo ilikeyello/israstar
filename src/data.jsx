@@ -76,7 +76,13 @@ const loadDynamicData = () => {
     by: "Isra" + (d.linkedSong ? ` · ♫ ${d.linkedSong}` : "")
   })).reverse();
   
-  Object.assign(window, { ALBUMS, PRODUCTS, TOUR, DEVOCIONALES, SCRIPTURE, SCRIPT_MARQUEE, LATEST_TRACK });
+  const adminSettings = window.adminStorage.get('settings') || {};
+  const SITE_SETTINGS = {
+    contactEmail: adminSettings.contactEmail || 'Hola@israstar.com',
+    links: adminSettings.links || {}
+  };
+  
+  Object.assign(window, { ALBUMS, PRODUCTS, TOUR, DEVOCIONALES, SCRIPTURE, SCRIPT_MARQUEE, LATEST_TRACK, SITE_SETTINGS });
 };
 
 window.loadDynamicData = loadDynamicData;

@@ -101,6 +101,9 @@ function Agenda() {
 }
 
 function Footer() {
+  const links = window.SITE_SETTINGS?.links || {};
+  const contactEmail = window.SITE_SETTINGS?.contactEmail || 'Hola@israstar.com';
+
   return (
     <footer className="footer">
       <div>
@@ -112,24 +115,24 @@ function Footer() {
       </div>
       <div>
         <h5>Escucha</h5>
-        <a href="#">Spotify</a>
-        <a href="#">Apple Music</a>
-        <a href="#">YouTube</a>
-        <a href="#">Bandcamp</a>
+        {links.spotify && <a href={links.spotify} target="_blank" rel="noreferrer">Spotify</a>}
+        {links.appleMusic && <a href={links.appleMusic} target="_blank" rel="noreferrer">Apple Music</a>}
+        {links.youtube && <a href={links.youtube} target="_blank" rel="noreferrer">YouTube</a>}
+        {links.bandcamp && <a href={links.bandcamp} target="_blank" rel="noreferrer">Bandcamp</a>}
       </div>
       <div>
         <h5>Sígueme</h5>
-        <a href="#">Instagram</a>
-        <a href="#">TikTok</a>
-        <a href="#">X / Twitter</a>
-        <a href="#">Newsletter</a>
+        {links.instagram && <a href={links.instagram} target="_blank" rel="noreferrer">Instagram</a>}
+        {links.tiktok && <a href={links.tiktok} target="_blank" rel="noreferrer">TikTok</a>}
+        {links.twitter && <a href={links.twitter} target="_blank" rel="noreferrer">X / Twitter</a>}
+        <a href="#agenda">Newsletter</a>
       </div>
       <div>
         <h5>Contacto</h5>
-        <a href="#">Management</a>
-        <a href="#">Prensa</a>
-        <a href="#">Iglesias</a>
-        <a href="#">Hola@israstar.com</a>
+        {links.management && <a href={links.management} target="_blank" rel="noreferrer">Management</a>}
+        {links.prensa && <a href={links.prensa} target="_blank" rel="noreferrer">Prensa</a>}
+        {links.iglesias && <a href={links.iglesias} target="_blank" rel="noreferrer">Iglesias</a>}
+        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
       </div>
       <div className="footer-bottom">
         <span>© 2026 · ISRASTAR · TODOS LOS DERECHOS</span>

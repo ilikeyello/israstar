@@ -102,6 +102,8 @@ function Agenda() {
   }, "PRIMER ANUNCIO \xB7 PRONTO"))));
 }
 function Footer() {
+  const links = window.SITE_SETTINGS?.links || {};
+  const contactEmail = window.SITE_SETTINGS?.contactEmail || 'Hola@israstar.com';
   return /*#__PURE__*/React.createElement("footer", {
     className: "footer"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -124,31 +126,51 @@ function Footer() {
       color: "var(--ink-3)",
       letterSpacing: "0.14em"
     }
-  }, "OBSERVATORIO \xB7 EST. 2022")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h5", null, "Escucha"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "Spotify"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "Apple Music"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "YouTube"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "Bandcamp")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h5", null, "S\xEDgueme"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "Instagram"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "TikTok"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
+  }, "OBSERVATORIO \xB7 EST. 2022")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h5", null, "Escucha"), links.spotify && /*#__PURE__*/React.createElement("a", {
+    href: links.spotify,
+    target: "_blank",
+    rel: "noreferrer"
+  }, "Spotify"), links.appleMusic && /*#__PURE__*/React.createElement("a", {
+    href: links.appleMusic,
+    target: "_blank",
+    rel: "noreferrer"
+  }, "Apple Music"), links.youtube && /*#__PURE__*/React.createElement("a", {
+    href: links.youtube,
+    target: "_blank",
+    rel: "noreferrer"
+  }, "YouTube"), links.bandcamp && /*#__PURE__*/React.createElement("a", {
+    href: links.bandcamp,
+    target: "_blank",
+    rel: "noreferrer"
+  }, "Bandcamp")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h5", null, "S\xEDgueme"), links.instagram && /*#__PURE__*/React.createElement("a", {
+    href: links.instagram,
+    target: "_blank",
+    rel: "noreferrer"
+  }, "Instagram"), links.tiktok && /*#__PURE__*/React.createElement("a", {
+    href: links.tiktok,
+    target: "_blank",
+    rel: "noreferrer"
+  }, "TikTok"), links.twitter && /*#__PURE__*/React.createElement("a", {
+    href: links.twitter,
+    target: "_blank",
+    rel: "noreferrer"
   }, "X / Twitter"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "Newsletter")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h5", null, "Contacto"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "Management"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "Prensa"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
+    href: "#agenda"
+  }, "Newsletter")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h5", null, "Contacto"), links.management && /*#__PURE__*/React.createElement("a", {
+    href: links.management,
+    target: "_blank",
+    rel: "noreferrer"
+  }, "Management"), links.prensa && /*#__PURE__*/React.createElement("a", {
+    href: links.prensa,
+    target: "_blank",
+    rel: "noreferrer"
+  }, "Prensa"), links.iglesias && /*#__PURE__*/React.createElement("a", {
+    href: links.iglesias,
+    target: "_blank",
+    rel: "noreferrer"
   }, "Iglesias"), /*#__PURE__*/React.createElement("a", {
-    href: "#"
-  }, "Hola@israstar.com")), /*#__PURE__*/React.createElement("div", {
+    href: `mailto:${contactEmail}`
+  }, contactEmail)), /*#__PURE__*/React.createElement("div", {
     className: "footer-bottom"
   }, /*#__PURE__*/React.createElement("span", null, "\xA9 2026 \xB7 ISRASTAR \xB7 TODOS LOS DERECHOS"), /*#__PURE__*/React.createElement("span", null, "DISE\xD1ADO EN EL OBSERVATORIO \xB7 HECHO CON FE")));
 }
