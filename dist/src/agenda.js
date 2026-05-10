@@ -23,6 +23,34 @@ function useCountdown(targetStr) {
   };
 }
 function Agenda() {
+  const [email, setEmail] = React.useState('');
+  const [status, setStatus] = React.useState('idle');
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (!email) return;
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email,
+          source: 'agenda'
+        })
+      });
+      if (res.ok) {
+        setStatus('success');
+        setEmail('');
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus('error');
+    }
+  };
   return /*#__PURE__*/React.createElement("section", {
     id: "agenda",
     className: "section"
@@ -40,17 +68,36 @@ function Agenda() {
     className: "cs-eyebrow"
   }, /*#__PURE__*/React.createElement("span", {
     className: "cs-dot"
-  }), " SE\xD1AL EN PREPARACI\xD3N"), /*#__PURE__*/React.createElement("h3", null, "Pr\xF3ximamente"), /*#__PURE__*/React.createElement("p", null, "Las fechas de la pr\xF3xima gira se est\xE1n confirmando. \xDAnete a la lista para recibir aviso antes que nadie cuando se anuncien los conciertos."), /*#__PURE__*/React.createElement("form", {
+  }), " SE\xD1AL EN PREPARACI\xD3N"), /*#__PURE__*/React.createElement("h3", null, "Pr\xF3ximamente"), /*#__PURE__*/React.createElement("p", null, "Las fechas de la pr\xF3xima gira se est\xE1n confirmando. \xDAnete a la lista para recibir aviso antes que nadie cuando se anuncien los conciertos."), status === 'success' ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: 'oklch(1 0 0 / 0.05)',
+      padding: '16px',
+      borderRadius: '12px',
+      border: '1px solid var(--cyan)',
+      color: 'var(--cyan)',
+      marginTop: '20px'
+    }
+  }, "\xA1Gracias! Te avisaremos cuando se anuncien las fechas.") : /*#__PURE__*/React.createElement("form", {
     className: "cs-form",
-    onSubmit: e => e.preventDefault()
+    onSubmit: handleSubmit
   }, /*#__PURE__*/React.createElement("input", {
     type: "email",
     placeholder: "tu@correo.com",
-    required: true
+    required: true,
+    value: email,
+    onChange: e => setEmail(e.target.value),
+    disabled: status === 'loading'
   }), /*#__PURE__*/React.createElement("button", {
     className: "btn primary",
-    type: "submit"
-  }, "Av\xEDsame")), /*#__PURE__*/React.createElement("div", {
+    type: "submit",
+    disabled: status === 'loading'
+  }, status === 'loading' ? 'Cargando...' : 'Avísame')), status === 'error' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: 'var(--amber)',
+      fontSize: '13px',
+      marginTop: '10px'
+    }
+  }, "Hubo un error al suscribirte. Intenta de nuevo."), /*#__PURE__*/React.createElement("div", {
     className: "cs-meta"
   }, "PRIMER ANUNCIO \xB7 PRONTO"))));
 }

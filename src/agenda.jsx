@@ -16,6 +16,33 @@ function useCountdown(targetStr) {
 }
 
 function Agenda() {
+  const [email, setEmail] = React.useState('');
+  const [status, setStatus] = React.useState('idle');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'agenda' })
+      });
+      
+      if (res.ok) {
+        setStatus('success');
+        setEmail('');
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus('error');
+    }
+  };
+
   return (
     <section id="agenda" className="section">
       <div className="section-head">
@@ -40,10 +67,32 @@ function Agenda() {
             Las fechas de la próxima gira se están confirmando. Únete a la lista para
             recibir aviso antes que nadie cuando se anuncien los conciertos.
           </p>
-          <form className="cs-form" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="tu@correo.com" required />
-            <button className="btn primary" type="submit">Avísame</button>
-          </form>
+          
+          {status === 'success' ? (
+            <div style={{ background: 'oklch(1 0 0 / 0.05)', padding: '16px', borderRadius: '12px', border: '1px solid var(--cyan)', color: 'var(--cyan)', marginTop: '20px' }}>
+              ¡Gracias! Te avisaremos cuando se anuncien las fechas.
+            </div>
+          ) : (
+            <form className="cs-form" onSubmit={handleSubmit}>
+              <input 
+                type="email" 
+                placeholder="tu@correo.com" 
+                required 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status === 'loading'}
+              />
+              <button className="btn primary" type="submit" disabled={status === 'loading'}>
+                {status === 'loading' ? 'Cargando...' : 'Avísame'}
+              </button>
+            </form>
+          )}
+          {status === 'error' && (
+            <div style={{ color: 'var(--amber)', fontSize: '13px', marginTop: '10px' }}>
+              Hubo un error al suscribirte. Intenta de nuevo.
+            </div>
+          )}
+
           <div className="cs-meta">PRIMER ANUNCIO · PRONTO</div>
         </div>
       </div>
